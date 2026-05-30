@@ -117,7 +117,7 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `perfil`, `status`, `criado_em`) VALUES
-(1, 'Administrador', 'admin@atendelab.com', '$2y$10$J9P2kU2BAMZ3TZcuxTsW4e1D/lka8EocYHzvyoOZmCNcWDQz3RuVC', 'admin', 'ativo', '2026-05-29 00:54:10');
+(1, 'Administrador', 'admin@atendelab.com', '$2y$12$hcg79UkymDoNBZmcb72CWO015qr5BfMtUqQ/QkOWwL98a6OK6LWt2', 'admin', 'ativo', '2026-05-29 00:54:10');
 
 --
 -- Indexes for dumped tables
