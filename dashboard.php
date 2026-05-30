@@ -127,7 +127,7 @@ $totalPessoas = $pdo->query("SELECT COUNT(*) FROM pessoas")->fetchColumn();
     </section>
 
     <section class="menu">
-        <a href="#">Pessoas atendidas</a>
+        <a href="pessoas/index.php">Pessoas atendidas</a>
         <a href="#">Tipos de atendimento</a>
         <a href="#">Atendimentos</a>
         <a href="#">Relatórios</a>
