@@ -5,6 +5,15 @@ require_once __DIR__ . '/../config/database.php';
 
 $mensagem = $_GET['mensagem'] ?? '';
 
+$status = $_GET['status'] ?? '';
+$pessoa_id = $_GET['pessoa_id'] ?? '';
+$tipo_atendimento_id = $_GET['tipo_atendimento_id'] ?? '';
+$data_inicio = $_GET['data_inicio'] ?? '';
+$data_fim = $_GET['data_fim'] ?? '';
+
+$pessoas = $pdo->query("SELECT id, nome FROM pessoas ORDER BY nome ASC")->fetchAll(PDO::FETCH_ASSOC);
+$tipos = $pdo->query("SELECT id, nome FROM tipos_atendimentos ORDER BY nome ASC")->fetchAll(PDO::FETCH_ASSOC);
+
 $sql = "SELECT 
             atendimentos.id,
             atendimentos.data_atendimento,
@@ -18,10 +27,56 @@ $sql = "SELECT
         INNER JOIN pessoas ON atendimentos.pessoa_id = pessoas.id
         INNER JOIN tipos_atendimentos ON atendimentos.tipo_atendimento_id = tipos_atendimentos.id
         INNER JOIN usuarios ON atendimentos.usuario_id = usuarios.id
-        ORDER BY atendimentos.criado_em DESC";
+        WHERE 1 = 1";
 
-$stmt = $pdo->query($sql);
+$parametros = [];
+
+if ($status !== '') {
+    $sql .= " AND atendimentos.status = :status";
+    $parametros[':status'] = $status;
+}
+
+if ($pessoa_id !== '') {
+    $sql .= " AND atendimentos.pessoa_id = :pessoa_id";
+    $parametros[':pessoa_id'] = $pessoa_id;
+}
+
+if ($tipo_atendimento_id !== '') {
+    $sql .= " AND atendimentos.tipo_atendimento_id = :tipo_atendimento_id";
+    $parametros[':tipo_atendimento_id'] = $tipo_atendimento_id;
+}
+
+if ($data_inicio !== '') {
+    $sql .= " AND atendimentos.data_atendimento >= :data_inicio";
+    $parametros[':data_inicio'] = $data_inicio;
+}
+
+if ($data_fim !== '') {
+    $sql .= " AND atendimentos.data_atendimento <= :data_fim";
+    $parametros[':data_fim'] = $data_fim;
+}
+
+$sql .= " ORDER BY atendimentos.criado_em DESC";
+
+$stmt = $pdo->prepare($sql);
+$stmt->execute($parametros);
 $atendimentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+function formatarStatus($status) {
+    if ($status === 'aberto') {
+        return 'Aberto';
+    }
+
+    if ($status === 'em_andamento') {
+        return 'Em andamento';
+    }
+
+    if ($status === 'concluido') {
+        return 'Concluído';
+    }
+
+    return $status;
+}
 
 ?>
 
@@ -102,6 +157,43 @@ $atendimentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             margin-bottom: 18px;
         }
 
+        .filtros {
+            background: #ffffff;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .filtros form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            align-items: end;
+        }
+
+        .filtros label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .filtros input,
+        .filtros select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .filtros .botoes-filtro {
+            display: flex;
+            gap: 8px;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -148,6 +240,23 @@ $atendimentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
         .descricao {
             max-width: 280px;
         }
+
+        @media (max-width: 768px) {
+            main {
+                padding: 18px;
+            }
+
+            .topo {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
     </style>
 </head>
 <body>
@@ -173,6 +282,59 @@ $atendimentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <a class="btn" href="criar.php">Novo atendimento</a>
         </div>
     </div>
+
+    <section class="filtros">
+        <form method="GET" action="">
+            <div>
+                <label for="status">Status</label>
+                <select id="status" name="status">
+                    <option value="">Todos</option>
+                    <option value="aberto" <?php echo $status === 'aberto' ? 'selected' : ''; ?>>Aberto</option>
+                    <option value="em_andamento" <?php echo $status === 'em_andamento' ? 'selected' : ''; ?>>Em andamento</option>
+                    <option value="concluido" <?php echo $status === 'concluido' ? 'selected' : ''; ?>>Concluído</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="pessoa_id">Pessoa</label>
+                <select id="pessoa_id" name="pessoa_id">
+                    <option value="">Todas</option>
+                    <?php foreach ($pessoas as $pessoa): ?>
+                        <option value="<?php echo $pessoa['id']; ?>" <?php echo $pessoa_id == $pessoa['id'] ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($pessoa['nome']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div>
+                <label for="tipo_atendimento_id">Tipo</label>
+                <select id="tipo_atendimento_id" name="tipo_atendimento_id">
+                    <option value="">Todos</option>
+                    <?php foreach ($tipos as $tipo): ?>
+                        <option value="<?php echo $tipo['id']; ?>" <?php echo $tipo_atendimento_id == $tipo['id'] ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($tipo['nome']); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div>
+                <label for="data_inicio">Data inicial</label>
+                <input type="date" id="data_inicio" name="data_inicio" value="<?php echo htmlspecialchars($data_inicio); ?>">
+            </div>
+
+            <div>
+                <label for="data_fim">Data final</label>
+                <input type="date" id="data_fim" name="data_fim" value="<?php echo htmlspecialchars($data_fim); ?>">
+            </div>
+
+            <div class="botoes-filtro">
+                <button class="btn" type="submit">Filtrar</button>
+                <a class="btn btn-secundario" href="index.php">Limpar</a>
+            </div>
+        </form>
+    </section>
 
     <?php if ($mensagem): ?>
         <div class="mensagem">
@@ -206,7 +368,7 @@ $atendimentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                         <td class="descricao"><?php echo htmlspecialchars($atendimento['descricao']); ?></td>
                         <td>
                             <span class="status-<?php echo htmlspecialchars($atendimento['status']); ?>">
-                                <?php echo htmlspecialchars($atendimento['status']); ?>
+                                <?php echo formatarStatus($atendimento['status']); ?>
                             </span>
                         </td>
                         <td>
@@ -220,7 +382,7 @@ $atendimentos = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 <?php endforeach; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="8">Nenhum atendimento cadastrado.</td>
+                    <td colspan="8">Nenhum atendimento encontrado para os filtros selecionados.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
