@@ -1,3 +1,17 @@
+<?php
+
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
+
+$controller = $_GET['controller'] ?? null;
+$action = $_GET['action'] ?? null;
+
+if ($controller !== null || $action !== null) {
+    require_once __DIR__ . '/../routes.php';
+    exit;
+}
+
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -20,19 +34,22 @@
             justify-content: center;
             padding: 32px;
             text-align: center;
+            box-sizing: border-box;
         }
 
         .box {
             background: #ffffff;
+            width: 100%;
             max-width: 720px;
             padding: 42px;
             border-radius: 18px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+            box-sizing: border-box;
         }
 
         h1 {
             font-size: 42px;
-            margin-bottom: 12px;
+            margin: 0 0 12px;
             color: #111827;
         }
 
@@ -60,17 +77,18 @@
 </head>
 <body>
 
-    <section class="hero">
-        <div class="box">
-            <h1>AtendeLab</h1>
-            <p>
-                Sistema de Controle de Atendimentos Acadêmicos para registrar,
-                acompanhar e consultar atendimentos realizados em ambiente acadêmico.
-            </p>
+<section class="hero">
+    <div class="box">
+        <h1>AtendeLab</h1>
 
-            <a href="/atendelab/login.php">Acessar sistema</a>
-        </div>
-    </section>
+        <p>
+            Sistema de Controle de Atendimentos Acadêmicos para registrar,
+            acompanhar e consultar atendimentos realizados em ambiente acadêmico.
+        </p>
+
+        <a href="/atendelab/login.php">Acessar sistema</a>
+    </div>
+</section>
 
 </body>
 </html>
