@@ -1,53 +1,81 @@
 <?php
 
+require_once __DIR__ . '/app/Controllers/AuthController.php';
 require_once __DIR__ . '/app/Controllers/UsuariosController.php';
+require_once __DIR__ . '/app/Middleware/auth.php';
 
-$controller = $_GET['controller'] ?? '';
-$action = $_GET['action'] ?? '';
+$controller = $_GET['controller'] ?? 'auth';
+$action = $_GET['action'] ?? 'login';
 
-if ($controller !== 'usuarios') {
-    http_response_code(404);
-    header('Content-Type: application/json; charset=utf-8');
+switch ($controller) {
+    case 'auth':
+        $authController = new AuthController();
 
-    echo json_encode(
-        ['erro' => 'Controller não encontrado.'],
-        JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
-    );
+        switch ($action) {
+            case 'login':
+                $authController->exibirLogin();
+                break;
 
-    exit;
-}
+            case 'entrar':
+                $authController->entrar();
+                break;
 
-$usuariosController = new UsuariosController();
+            case 'dashboard':
+                $authController->dashboard();
+                break;
 
-switch ($action) {
-    case 'listar':
-        $usuariosController->listar();
+            case 'logout':
+                $authController->logout();
+                break;
+
+            default:
+                http_response_code(404);
+                echo 'Ação de autenticação não encontrada.';
+        }
+
         break;
 
-    case 'buscar':
-    case 'buscarPorId':
-        $usuariosController->buscarPorId();
-        break;
+    case 'usuarios':
+        exigirAutenticacao();
 
-    case 'criar':
-        $usuariosController->criar();
-        break;
+        $usuariosController = new UsuariosController();
 
-    case 'atualizar':
-        $usuariosController->atualizar();
-        break;
+        switch ($action) {
+            case 'listar':
+                $usuariosController->listar();
+                break;
 
-    case 'excluir':
-    case 'inativar':
-        $usuariosController->excluir();
+            case 'buscar':
+            case 'buscarPorId':
+                $usuariosController->buscarPorId();
+                break;
+
+            case 'criar':
+                $usuariosController->criar();
+                break;
+
+            case 'atualizar':
+                $usuariosController->atualizar();
+                break;
+
+            case 'excluir':
+            case 'inativar':
+                $usuariosController->excluir();
+                break;
+
+            default:
+                http_response_code(404);
+                header('Content-Type: application/json; charset=utf-8');
+
+                echo json_encode(
+                    ['erro' => 'Ação de usuários não encontrada.'],
+                    JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
+                );
+        }
+
         break;
 
     default:
         http_response_code(404);
-        header('Content-Type: application/json; charset=utf-8');
-
-        echo json_encode(
-            ['erro' => 'Ação de usuários não encontrada.'],
-            JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE
-        );
+        echo 'Controller não encontrado.';
 }

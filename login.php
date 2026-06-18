@@ -26,6 +26,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['usuario_email'] = $usuario['email'];
             $_SESSION['usuario_perfil'] = $usuario['perfil'];
 
+
+            $_SESSION['usuario'] = [
+                'id' => $usuario['id'],
+                'nome' => $usuario['nome'],
+                'email' => $usuario['email'],
+                'perfil' => $usuario['perfil']
+            ];
+
+            session_regenerate_id(true);
             header('Location: dashboard.php');
             exit;
         } else {
