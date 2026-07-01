@@ -1,148 +1,122 @@
+<?php
+
+declare(strict_types=1);
+
+require_once __DIR__ . '/../layouts/config-view.php';
+
+?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Login - AtendeLab</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <style>
-        body {
-            margin: 0;
-            min-height: 100vh;
-            font-family: Arial, sans-serif;
-            background: #f3f5f7;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #1f2937;
-        }
-
-        .login-card {
-            width: 100%;
-            max-width: 380px;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 14px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-            box-sizing: border-box;
-        }
-
-        h1 {
-            margin: 0 0 8px;
-            color: #111827;
-        }
-
-        p {
-            margin-top: 0;
-            color: #6b7280;
-            line-height: 1.5;
-        }
-
-        label {
-            display: block;
-            margin-top: 16px;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #374151;
-        }
-
-        input {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #d1d5db;
-            border-radius: 8px;
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            margin-top: 20px;
-            padding: 12px;
-            background: #2563eb;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #1d4ed8;
-        }
-
-        .alerta {
-            padding: 11px;
-            border-radius: 8px;
-            margin-bottom: 16px;
-            font-size: 14px;
-        }
-
-        .erro {
-            background: #fee2e2;
-            color: #991b1b;
-        }
-
-        .sucesso {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .voltar {
-            display: block;
-            margin-top: 16px;
-            text-align: center;
-            color: #2563eb;
-            text-decoration: none;
-            font-size: 14px;
-        }
-    </style>
-</head>
-<body>
-
-<div class="login-card">
-    <h1>AtendeLab</h1>
-    <p>Entre para acessar a área administrativa.</p>
-
-    <?php if (!empty($erro)): ?>
-        <div class="alerta erro">
-            <?php echo htmlspecialchars($erro); ?>
-        </div>
-    <?php endif; ?>
-
-    <?php if (!empty($mensagem)): ?>
-        <div class="alerta sucesso">
-            <?php echo htmlspecialchars($mensagem); ?>
-        </div>
-    <?php endif; ?>
-
-    <form
-        method="POST"
-        action="/atendelab/public/?controller=auth&action=entrar"
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
     >
-        <label for="email">E-mail</label>
-        <input
-            type="email"
-            id="email"
-            name="email"
-            placeholder="admin@atendelab.com"
-            required
-        >
 
-        <label for="senha">Senha</label>
-        <input
-            type="password"
-            id="senha"
-            name="senha"
-            placeholder="Digite sua senha"
-            required
-        >
+    <title>Entrar | AtendeLab</title>
 
-        <button type="submit">Entrar</button>
-    </form>
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 
-    <a class="voltar" href="/atendelab/public/">
-        Voltar para a página inicial
-    </a>
+    <link
+        rel="stylesheet"
+        href="<?= $baseUrl ?>assets/css/style.css"
+    >
+</head>
+
+<body class="bg-light">
+
+<div
+    class="container min-vh-100 d-flex align-items-center justify-content-center py-4"
+>
+    <div class="card border-0 shadow-sm login-card">
+        <div class="card-body p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="brand-mark mx-auto mb-3">
+                    AL
+                </div>
+
+                <h1 class="h3 mb-1">
+                    AtendeLab
+                </h1>
+
+                <p class="text-secondary mb-0">
+                    Controle de atendimentos acadêmicos
+                </p>
+            </div>
+
+            <?php if (!empty($mensagem)): ?>
+                <div class="alert alert-success">
+                    <?= htmlspecialchars(
+                        (string) $mensagem,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($erro)): ?>
+                <div class="alert alert-danger">
+                    <?= htmlspecialchars(
+                        (string) $erro,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </div>
+            <?php endif; ?>
+
+            <form
+                method="POST"
+                action="<?= $baseUrl ?>?controller=auth&action=entrar"
+            >
+                <div class="mb-3">
+                    <label
+                        for="email"
+                        class="form-label"
+                    >
+                        E-mail
+                    </label>
+
+                    <input
+                        type="email"
+                        class="form-control"
+                        id="email"
+                        name="email"
+                        required
+                        autofocus
+                    >
+                </div>
+
+                <div class="mb-4">
+                    <label
+                        for="senha"
+                        class="form-label"
+                    >
+                        Senha
+                    </label>
+
+                    <input
+                        type="password"
+                        class="form-control"
+                        id="senha"
+                        name="senha"
+                        required
+                    >
+                </div>
+
+                <button
+                    class="btn btn-success w-100"
+                    type="submit"
+                >
+                    Entrar
+                </button>
+            </form>
+        </div>
+    </div>
 </div>
 
 </body>

@@ -1,135 +1,246 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard - AtendeLab</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<?php
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f3f5f7;
-            color: #1f2937;
-        }
+$tituloPagina = 'Dashboard';
 
-        header {
-            background: #111827;
-            color: #ffffff;
-            padding: 18px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+require __DIR__ . '/../layouts/header.php';
 
-        header a {
-            color: #ffffff;
-            text-decoration: none;
-            background: #dc2626;
-            padding: 9px 14px;
-            border-radius: 7px;
-        }
+?>
 
-        main {
-            padding: 32px;
-        }
+<div
+    class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4"
+>
+    <div>
+        <h1 class="h3 mb-1">
+            Dashboard
+        </h1>
 
-        .card {
-            max-width: 760px;
-            background: #ffffff;
-            padding: 26px;
-            border-radius: 14px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.07);
-        }
+        <p class="text-secondary mb-0">
+            Resumo dos dados cadastrados no AtendeLab.
+        </p>
+    </div>
+</div>
 
-        h1 {
-            margin-top: 0;
-        }
+<div id="alerta"></div>
 
-        .dados {
-            margin: 22px 0;
-            padding: 16px;
-            background: #f9fafb;
-            border-radius: 10px;
-        }
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary small">
+                    Pessoas cadastradas
+                </div>
 
-        .dados p {
-            margin: 8px 0;
-        }
+                <div
+                    class="display-6 fw-semibold"
+                    id="totalPessoas"
+                >
+                    —
+                </div>
+            </div>
+        </div>
+    </div>
 
-        .botoes {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary small">
+                    Tipos de atendimento
+                </div>
 
-        .btn {
-            display: inline-block;
-            background: #2563eb;
-            color: #ffffff;
-            padding: 11px 15px;
-            border-radius: 8px;
-            text-decoration: none;
-        }
+                <div
+                    class="display-6 fw-semibold"
+                    id="totalTipos"
+                >
+                    —
+                </div>
+            </div>
+        </div>
+    </div>
 
-        .btn-secundario {
-            background: #6b7280;
-        }
-    </style>
-</head>
-<body>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <div class="text-secondary small">
+                    Atendimentos registrados
+                </div>
 
-<header>
-    <strong>AtendeLab | Área restrita</strong>
+                <div
+                    class="display-6 fw-semibold"
+                    id="totalAtendimentos"
+                >
+                    —
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <a href="/atendelab/public/?controller=auth&action=logout">
-        Sair
-    </a>
-</header>
+<div class="card border-0 shadow-sm mb-4">
+    <div class="card-body">
+        <h2 class="h5">
+            Acesso rápido
+        </h2>
 
-<main>
-    <section class="card">
-        <h1>Dashboard protegido</h1>
-
-        <p>
-            A sessão foi criada com sucesso e o usuário possui acesso
-            à área administrativa.
+        <p class="text-secondary">
+            Use os módulos abaixo para cadastrar e consultar dados reais.
         </p>
 
-        <div class="dados">
-            <p>
-                <strong>Nome:</strong>
-                <?php echo htmlspecialchars($usuario['nome'] ?? ''); ?>
-            </p>
-
-            <p>
-                <strong>E-mail:</strong>
-                <?php echo htmlspecialchars($usuario['email'] ?? ''); ?>
-            </p>
-
-            <p>
-                <strong>Perfil:</strong>
-                <?php echo htmlspecialchars($usuario['perfil'] ?? ''); ?>
-            </p>
-        </div>
-
-        <div class="botoes">
+        <div class="d-flex flex-wrap gap-2">
             <a
-                class="btn"
-                href="/atendelab/public/?controller=usuarios&action=listar"
+                class="btn btn-success"
+                href="<?= $baseUrl ?>?controller=frontend&action=pessoas"
             >
-                Testar rota protegida de usuários
+                Gerenciar pessoas
             </a>
 
             <a
-                class="btn btn-secundario"
-                href="/atendelab/dashboard.php"
+                class="btn btn-outline-success"
+                href="<?= $baseUrl ?>?controller=frontend&action=tipos"
             >
-                Abrir dashboard completo
+                Gerenciar tipos
+            </a>
+
+            <a
+                class="btn btn-outline-success"
+                href="<?= $baseUrl ?>?controller=frontend&action=atendimentos"
+            >
+                Registrar atendimentos
             </a>
         </div>
-    </section>
-</main>
+    </div>
+</div>
 
-</body>
-</html>
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <h2 class="h5 mb-3">
+            Atendimentos recentes
+        </h2>
+
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Pessoa</th>
+                        <th>Tipo</th>
+                        <th>Responsável</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tabelaRecentes">
+                    <tr>
+                        <td
+                            colspan="5"
+                            class="text-center py-4"
+                        >
+                            Carregando...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const resposta = await AtendeLabApi.get(
+            'dashboard',
+            'resumo'
+        );
+
+        const indicadores = resposta.indicadores ?? {};
+
+        document.getElementById('totalPessoas').textContent =
+            indicadores.total_pessoas ?? 0;
+
+        document.getElementById('totalTipos').textContent =
+            indicadores.total_tipos ?? 0;
+
+        document.getElementById('totalAtendimentos').textContent =
+            indicadores.total_atendimentos ?? 0;
+
+        const recentes = Array.isArray(
+            resposta.atendimentos_recentes
+        )
+            ? resposta.atendimentos_recentes
+            : [];
+
+        const tbody = document.getElementById('tabelaRecentes');
+
+        if (!recentes.length) {
+            tbody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="5"
+                        class="text-center py-4"
+                    >
+                        Nenhum atendimento recente.
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+        tbody.innerHTML = recentes.map(atendimento => {
+            const classeStatus =
+                atendimento.status === 'concluido'
+                    ? 'text-bg-success'
+                    : atendimento.status === 'em_andamento'
+                    ? 'text-bg-warning'
+                    : 'text-bg-primary';
+
+            return `
+                <tr>
+                    <td>
+                        ${AtendeLabApi.escape(
+                            atendimento.pessoa_nome
+                        )}
+                    </td>
+
+                    <td>
+                        ${AtendeLabApi.escape(
+                            atendimento.tipo_nome
+                        )}
+                    </td>
+
+                    <td>
+                        ${AtendeLabApi.escape(
+                            atendimento.usuario_nome
+                        )}
+                    </td>
+
+                    <td>
+                        ${AtendeLabApi.escape(
+                            atendimento.data_atendimento
+                        )}
+                    </td>
+
+                    <td>
+                        <span class="badge ${classeStatus}">
+                            ${AtendeLabApi.escape(
+                                atendimento.status
+                            )}
+                        </span>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    } catch (error) {
+        document.getElementById('totalPessoas').textContent = '!';
+        document.getElementById('totalTipos').textContent = '!';
+        document.getElementById('totalAtendimentos').textContent = '!';
+
+        AtendeLabApi.showAlert(
+            'alerta',
+            error.message,
+            'danger'
+        );
+    }
+});
+</script>
+
+<?php require __DIR__ . '/../layouts/footer.php'; ?>

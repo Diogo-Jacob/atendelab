@@ -137,11 +137,9 @@ class AtendimentosController
             FILTER_VALIDATE_INT
         );
 
-        $usuarioId = filter_input(
-            INPUT_POST,
-            'usuario_id',
-            FILTER_VALIDATE_INT
-        );
+        $usuarioId = isset($_SESSION['usuario']['id'])
+            ? (int) $_SESSION['usuario']['id']
+            : null;
 
         $descricao = trim($_POST['descricao'] ?? '');
         $dataAtendimento = trim($_POST['data_atendimento'] ?? '');
